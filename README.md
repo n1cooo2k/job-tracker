@@ -17,41 +17,6 @@ A full-stack dashboard to track every job application, interview and offer in on
 
 React 19 · Vite 7 · Tailwind CSS 4 · Recharts 3 · Supabase JS v2 · React Router 7
 
-## Setup
-
-### 1. Supabase project
-
-1. Create a project at [supabase.com](https://supabase.com).
-2. Open **SQL Editor**, paste the contents of [`supabase/schema.sql`](supabase/schema.sql) and run it. This creates the `job_applications` table, an index, and the RLS policies.
-3. (Optional) In **Authentication > Providers > Email**, disable "Confirm email" if you want signups to log in immediately without email verification.
-
-### 2. Environment variables
-
-Copy `.env.example` to `.env` and fill in your credentials from **Project Settings > API**:
-
-```
-VITE_SUPABASE_URL=https://your-project-id.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-public-key
-```
-
-The anon key is safe to expose in the browser — row-level security is what protects the data.
-
-### 3. Run locally
-
-```bash
-npm install
-npm run dev
-```
-
-Open http://localhost:5173, sign up, and start tracking.
-
-## Deploy to Vercel
-
-1. Push this repo to GitHub.
-2. In Vercel, **Add New Project** and import the repo. Vercel auto-detects Vite (build command `npm run build`, output `dist`).
-3. Add the two environment variables (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`) under **Settings > Environment Variables**.
-4. Deploy. `vercel.json` already rewrites all routes to `index.html` so client-side routing works on refresh.
-
 ## Project structure
 
 ```
