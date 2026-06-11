@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useApplications } from '../hooks/useApplications'
 import { STATUSES, formatDate } from '../utils/stats'
+import { exportToCsv } from '../utils/csv'
 import StatusBadge from '../components/StatusBadge'
 import JobFormModal from '../components/JobFormModal'
 import ConfirmDialog from '../components/ConfirmDialog'
@@ -10,6 +11,7 @@ import {
   PencilIcon,
   TrashIcon,
   ExternalIcon,
+  DownloadIcon,
   MapPinIcon,
   CalendarIcon,
   InboxIcon,
@@ -67,6 +69,15 @@ export default function Board() {
           </p>
         </div>
         <div className="flex gap-3">
+          <button
+            onClick={() => exportToCsv(rows)}
+            disabled={!rows.length}
+            className="btn-ghost"
+            title="Export all applications to CSV"
+          >
+            <DownloadIcon size={16} />
+            <span className="hidden sm:inline">Export CSV</span>
+          </button>
           <button onClick={() => setModal('new')} className="btn-primary">
             <PlusIcon size={16} />
             Add application
