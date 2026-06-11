@@ -2,6 +2,8 @@
 
 A full-stack dashboard to track every job application, interview and offer in one place. Built with React + Vite, Tailwind CSS, Recharts and Supabase (Postgres + Auth with row-level security).
 
+**Live demo:** [job-tracker-two-topaz.vercel.app](https://job-tracker-two-topaz.vercel.app)
+
 ## Features
 
 - **Auth** — email/password signup and login with Supabase Auth; all app routes are protected.
