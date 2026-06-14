@@ -6,6 +6,7 @@ const COLUMNS = [
   'salary_range',
   'application_date',
   'status',
+  'source',
   'notes',
   'job_url',
   'created_at',

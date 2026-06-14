@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { STATUSES } from '../utils/stats'
+import { STATUSES, SOURCES } from '../utils/stats'
 import { CloseIcon } from './icons'
 
 function todayIso() {
@@ -16,6 +16,7 @@ const emptyForm = {
   salary_range: '',
   application_date: todayIso(),
   status: 'Applied',
+  source: '',
   notes: '',
   job_url: '',
 }
@@ -36,6 +37,7 @@ export default function JobFormModal({ job, onSave, onClose }) {
         salary_range: job.salary_range ?? '',
         application_date: job.application_date ?? todayIso(),
         status: job.status ?? 'Applied',
+        source: job.source ?? '',
         notes: job.notes ?? '',
         job_url: job.job_url ?? '',
       })
@@ -137,10 +139,23 @@ export default function JobFormModal({ job, onSave, onClose }) {
             </div>
             <div>
               <label className="mb-1.5 block text-xs font-semibold tracking-wide text-ink-300">
-                JOB URL
+                SOURCE
               </label>
-              <input className="field" type="url" placeholder="https://…" value={form.job_url} onChange={set('job_url')} />
+              <select className="field" value={form.source} onChange={set('source')}>
+                <option value="">— Not set —</option>
+                {SOURCES.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
             </div>
+          </div>
+          <div>
+            <label className="mb-1.5 block text-xs font-semibold tracking-wide text-ink-300">
+              JOB URL
+            </label>
+            <input className="field" type="url" placeholder="https://…" value={form.job_url} onChange={set('job_url')} />
           </div>
           <div>
             <label className="mb-1.5 block text-xs font-semibold tracking-wide text-ink-300">

@@ -1,5 +1,15 @@
 export const STATUSES = ['Applied', 'Interview', 'Offer', 'Rejected']
 
+export const SOURCES = [
+  'LinkedIn',
+  'Indeed',
+  'Glassdoor',
+  'Company website',
+  'Referral',
+  'Recruiter',
+  'Other',
+]
+
 export const STATUS_COLORS = {
   Applied: 'var(--color-applied)',
   Interview: 'var(--color-interview)',
@@ -94,6 +104,17 @@ export function statusData(rows) {
     name: status,
     value: rows.filter((r) => r.status === status).length,
   })).filter((s) => s.value > 0)
+}
+
+export function sourceData(rows) {
+  const counts = new Map()
+  for (const row of rows) {
+    const source = row.source?.trim() || 'Unknown'
+    counts.set(source, (counts.get(source) ?? 0) + 1)
+  }
+  return [...counts.entries()]
+    .map(([source, count]) => ({ source, count }))
+    .sort((a, b) => b.count - a.count)
 }
 
 export function topCountries(rows, limit = 6) {

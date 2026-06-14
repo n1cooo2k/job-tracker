@@ -14,6 +14,7 @@ create table if not exists public.job_applications (
     check (status in ('Applied', 'Interview', 'Offer', 'Rejected')),
   notes text,
   job_url text,
+  source text,
   created_at timestamptz not null default now()
 );
 

@@ -19,6 +19,7 @@ import {
   weeklyData,
   statusData,
   topCountries,
+  sourceData,
   monthlyData,
   STATUS_COLORS,
 } from '../utils/stats'
@@ -91,6 +92,7 @@ export default function Dashboard() {
   const weekly = weeklyData(rows)
   const byStatus = statusData(rows)
   const countries = topCountries(rows)
+  const sources = sourceData(rows)
   const monthly = monthlyData(rows)
   const hasData = rows.length > 0
 
@@ -212,6 +214,27 @@ export default function Dashboard() {
                   activeDot={{ r: 5 }}
                 />
               </LineChart>
+            </Responsive>
+          ) : (
+            <EmptyChart />
+          )}
+        </ChartCard>
+
+        <ChartCard
+          title="Applications by source"
+          subtitle="Where your applications come from"
+          delay={360}
+          className="lg:col-span-2"
+        >
+          {sources.length ? (
+            <Responsive>
+              <BarChart data={sources} layout="vertical" margin={{ top: 4, right: 16, left: 8, bottom: 0 }}>
+                <CartesianGrid stroke={GRID} horizontal={false} />
+                <XAxis type="number" tick={AXIS} axisLine={false} tickLine={false} allowDecimals={false} />
+                <YAxis type="category" dataKey="source" tick={AXIS} axisLine={false} tickLine={false} width={110} />
+                <Tooltip content={<DarkTooltip />} cursor={{ fill: CURSOR_FILL }} />
+                <Bar dataKey="count" name="Applications" fill="var(--color-accent-500)" radius={[0, 5, 5, 0]} maxBarSize={20} />
+              </BarChart>
             </Responsive>
           ) : (
             <EmptyChart />
