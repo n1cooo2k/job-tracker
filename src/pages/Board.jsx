@@ -71,17 +71,33 @@ export default function Board() {
     [rows],
   )
 
-  const filtered = useMemo(() => {
+  // Everything except the status filter, so status counts stay contextual
+  // to the current search and country selection.
+  const searchAndCountry = useMemo(() => {
     const q = query.trim().toLowerCase()
     return rows.filter((row) => {
-      if (statusFilter !== 'All' && row.status !== statusFilter) return false
       if (countryFilter !== 'All' && row.country?.trim() !== countryFilter) return false
       if (!q) return true
       return [row.company, row.role, row.city, row.country, row.notes]
         .filter(Boolean)
         .some((field) => field.toLowerCase().includes(q))
     })
-  }, [rows, query, statusFilter, countryFilter])
+  }, [rows, query, countryFilter])
+
+  const statusCounts = useMemo(() => {
+    const counts = { All: searchAndCountry.length }
+    for (const s of STATUSES) counts[s] = 0
+    for (const row of searchAndCountry) counts[row.status] = (counts[row.status] ?? 0) + 1
+    return counts
+  }, [searchAndCountry])
+
+  const filtered = useMemo(
+    () =>
+      statusFilter === 'All'
+        ? searchAndCountry
+        : searchAndCountry.filter((row) => row.status === statusFilter),
+    [searchAndCountry, statusFilter],
+  )
 
   const sorted = useMemo(() => {
     const factor = sort.dir === 'asc' ? 1 : -1
@@ -143,9 +159,11 @@ export default function Board() {
           onChange={(e) => setStatusFilter(e.target.value)}
           aria-label="Filter by status"
         >
-          <option value="All">All statuses</option>
+          <option value="All">All statuses ({statusCounts.All})</option>
           {STATUSES.map((s) => (
-            <option key={s}>{s}</option>
+            <option key={s} value={s}>
+              {s} ({statusCounts[s]})
+            </option>
           ))}
         </select>
         <select
