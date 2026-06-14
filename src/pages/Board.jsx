@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useApplications } from '../hooks/useApplications'
-import { STATUSES, formatDate } from '../utils/stats'
+import { STATUSES, formatDate, parseDate } from '../utils/stats'
 import { exportToCsv } from '../utils/csv'
 import StatusBadge from '../components/StatusBadge'
 import JobFormModal from '../components/JobFormModal'
@@ -8,6 +8,7 @@ import ConfirmDialog from '../components/ConfirmDialog'
 import {
   PlusIcon,
   SearchIcon,
+  SortIcon,
   PencilIcon,
   TrashIcon,
   ExternalIcon,
@@ -21,15 +22,49 @@ function location(row) {
   return [row.city, row.country].filter(Boolean).join(', ') || '—'
 }
 
+// Comparators per sortable column. Status sorts along the pipeline
+// (Applied → Interview → Offer → Rejected), not alphabetically.
+const comparators = {
+  company: (a, b) => a.company.localeCompare(b.company),
+  application_date: (a, b) => (parseDate(a.application_date) ?? 0) - (parseDate(b.application_date) ?? 0),
+  status: (a, b) => STATUSES.indexOf(a.status) - STATUSES.indexOf(b.status),
+}
+
+// Clickable table header that toggles sort direction and shows the active arrow.
+function SortableTh({ label, sortKey, sort, onSort, className = 'px-4' }) {
+  const active = sort.key === sortKey
+  return (
+    <th className={`py-3.5 font-semibold ${className}`}>
+      <button
+        onClick={() => onSort(sortKey)}
+        className={`group inline-flex items-center gap-1.5 transition hover:text-ink-200 ${active ? 'text-ink-200' : ''}`}
+        aria-label={`Sort by ${label}`}
+      >
+        {label}
+        <SortIcon
+          dir={active ? sort.dir : null}
+          className={active ? 'text-accent-400' : 'text-ink-500 opacity-0 transition-opacity group-hover:opacity-100'}
+        />
+      </button>
+    </th>
+  )
+}
+
 export default function Board() {
   const { rows, loading, error, save, remove } = useApplications()
 
   const [query, setQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('All')
   const [countryFilter, setCountryFilter] = useState('All')
+  const [sort, setSort] = useState({ key: 'application_date', dir: 'desc' })
   const [modal, setModal] = useState(null) // null | 'new' | row object
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [deleting, setDeleting] = useState(false)
+
+  // New column sorts ascending; clicking the active column flips direction.
+  function handleSort(key) {
+    setSort((s) => (s.key === key ? { key, dir: s.dir === 'asc' ? 'desc' : 'asc' } : { key, dir: 'asc' }))
+  }
 
   const countries = useMemo(
     () => [...new Set(rows.map((r) => r.country?.trim()).filter(Boolean))].sort(),
@@ -47,6 +82,12 @@ export default function Board() {
         .some((field) => field.toLowerCase().includes(q))
     })
   }, [rows, query, statusFilter, countryFilter])
+
+  const sorted = useMemo(() => {
+    const factor = sort.dir === 'asc' ? 1 : -1
+    const compare = comparators[sort.key]
+    return [...filtered].sort((a, b) => factor * compare(a, b))
+  }, [filtered, sort])
 
   async function handleDelete() {
     setDeleting(true)
@@ -157,16 +198,16 @@ export default function Board() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-white/8 text-left text-xs tracking-wide text-ink-400">
-                    <th className="px-5 py-3.5 font-semibold">COMPANY / ROLE</th>
+                    <SortableTh label="COMPANY / ROLE" sortKey="company" sort={sort} onSort={handleSort} className="px-5" />
                     <th className="px-4 py-3.5 font-semibold">LOCATION</th>
                     <th className="px-4 py-3.5 font-semibold">SALARY</th>
-                    <th className="px-4 py-3.5 font-semibold">APPLIED</th>
-                    <th className="px-4 py-3.5 font-semibold">STATUS</th>
+                    <SortableTh label="APPLIED" sortKey="application_date" sort={sort} onSort={handleSort} />
+                    <SortableTh label="STATUS" sortKey="status" sort={sort} onSort={handleSort} />
                     <th className="px-4 py-3.5 text-right font-semibold">ACTIONS</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.map((row) => (
+                  {sorted.map((row) => (
                     <tr key={row.id} className="border-b border-white/[0.04] transition last:border-0 hover:bg-white/[0.025]">
                       <td className="px-5 py-3.5">
                         <p className="font-semibold text-ink-100">{row.company}</p>
@@ -217,7 +258,7 @@ export default function Board() {
 
             {/* Mobile / tablet cards */}
             <div className="grid gap-3 sm:grid-cols-2 lg:hidden">
-              {filtered.map((row) => (
+              {sorted.map((row) => (
                 <div key={row.id} className="card flex flex-col gap-3 p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">

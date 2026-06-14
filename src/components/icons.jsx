@@ -59,6 +59,14 @@ export const SearchIcon = (p) => (
   </Icon>
 )
 
+// Two stacked chevrons; `dir` ('asc' | 'desc' | null) brightens the active arrow.
+export const SortIcon = ({ size = 14, dir = null, ...props }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="m8 9 4-4 4 4" opacity={dir === 'asc' ? 1 : dir === 'desc' ? 0.3 : 0.55} />
+    <path d="m16 15-4 4-4-4" opacity={dir === 'desc' ? 1 : dir === 'asc' ? 0.3 : 0.55} />
+  </svg>
+)
+
 export const PencilIcon = (p) => (
   <Icon {...p}>
     <path d="M16.5 3.9a2.1 2.1 0 0 1 3 3L7 19.5 3 21l1.5-4L16.5 3.9Z" />
