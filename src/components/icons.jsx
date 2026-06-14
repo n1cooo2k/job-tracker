@@ -124,6 +124,13 @@ export const InboxIcon = (p) => (
   </Icon>
 )
 
+export const BellIcon = (p) => (
+  <Icon {...p}>
+    <path d="M6 9a6 6 0 0 1 12 0c0 4 1.5 5.5 2 6.5H4c.5-1 2-2.5 2-6.5Z" />
+    <path d="M10 19a2 2 0 0 0 4 0" />
+  </Icon>
+)
+
 export const SunIcon = (p) => (
   <Icon {...p}>
     <circle cx="12" cy="12" r="4" />

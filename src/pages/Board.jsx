@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useApplications } from '../hooks/useApplications'
-import { STATUSES, formatDate, parseDate } from '../utils/stats'
+import { STATUSES, formatDate, parseDate, needsFollowUp, daysSince } from '../utils/stats'
 import { exportToCsv } from '../utils/csv'
 import StatusBadge from '../components/StatusBadge'
 import JobFormModal from '../components/JobFormModal'
@@ -16,10 +16,23 @@ import {
   MapPinIcon,
   CalendarIcon,
   InboxIcon,
+  BellIcon,
 } from '../components/icons'
 
 function location(row) {
   return [row.city, row.country].filter(Boolean).join(', ') || '—'
+}
+
+// Amber reminder pill shown on stale, unresolved applications.
+function FollowUpChip({ row }) {
+  return (
+    <span
+      title={`No activity for ${daysSince(row.application_date)} days — consider following up`}
+      className="inline-flex items-center gap-1 rounded-full border border-interview/30 bg-interview/10 px-2 py-0.5 text-[11px] font-semibold text-interview"
+    >
+      <BellIcon size={11} /> Follow up
+    </span>
+  )
 }
 
 // Comparators per sortable column. Status sorts along the pipeline
@@ -105,6 +118,8 @@ export default function Board() {
     return [...filtered].sort((a, b) => factor * compare(a, b))
   }, [filtered, sort])
 
+  const followUpCount = useMemo(() => rows.filter(needsFollowUp).length, [rows])
+
   async function handleDelete() {
     setDeleting(true)
     try {
@@ -121,8 +136,15 @@ export default function Board() {
       <div className="flex flex-wrap items-end justify-between gap-4 rise">
         <div>
           <h1 className="font-display text-2xl font-bold tracking-tight">Job Board</h1>
-          <p className="mt-1 text-sm text-ink-300">
-            {rows.length} application{rows.length === 1 ? '' : 's'} tracked
+          <p className="mt-1 flex flex-wrap items-center gap-x-2 text-sm text-ink-300">
+            <span>
+              {rows.length} application{rows.length === 1 ? '' : 's'} tracked
+            </span>
+            {followUpCount > 0 && (
+              <span className="inline-flex items-center gap-1 text-interview">
+                <BellIcon size={13} /> {followUpCount} to follow up
+              </span>
+            )}
           </p>
         </div>
         <div className="flex gap-3">
@@ -228,7 +250,10 @@ export default function Board() {
                   {sorted.map((row) => (
                     <tr key={row.id} className="border-b border-hairline transition last:border-0 hover:bg-surface-1">
                       <td className="px-5 py-3.5">
-                        <p className="font-semibold text-ink-100">{row.company}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-semibold text-ink-100">{row.company}</p>
+                          {needsFollowUp(row) && <FollowUpChip row={row} />}
+                        </div>
                         <p className="mt-0.5 text-xs text-ink-300">{row.role}</p>
                       </td>
                       <td className="px-4 py-3.5 text-ink-200">{location(row)}</td>
@@ -280,7 +305,10 @@ export default function Board() {
                 <div key={row.id} className="card flex flex-col gap-3 p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="truncate font-display font-semibold">{row.company}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="truncate font-display font-semibold">{row.company}</p>
+                        {needsFollowUp(row) && <FollowUpChip row={row} />}
+                      </div>
                       <p className="mt-0.5 truncate text-sm text-ink-300">{row.role}</p>
                     </div>
                     <StatusBadge status={row.status} />

@@ -20,6 +20,25 @@ export function formatDate(value) {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
+/** Whole days between a 'YYYY-MM-DD' date and today (0 if missing/future). */
+export function daysSince(value) {
+  const date = parseDate(value)
+  if (!date) return 0
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  return Math.max(0, Math.round((today - date) / 86400000))
+}
+
+export const FOLLOW_UP_DAYS = 14
+
+/** Unresolved applications with no movement for FOLLOW_UP_DAYS+ days. */
+export function needsFollowUp(row) {
+  return (
+    (row.status === 'Applied' || row.status === 'Interview') &&
+    daysSince(row.application_date) >= FOLLOW_UP_DAYS
+  )
+}
+
 function startOfWeek(date) {
   const d = new Date(date)
   d.setHours(0, 0, 0, 0)
