@@ -17,13 +17,17 @@ function escapeCell(value) {
   return /[",\n\r]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text
 }
 
-export function exportToCsv(rows, filename = 'job-applications.csv') {
-  const lines = [
+/** Serialize rows to CSV text (header + CRLF rows). Pure and unit-testable. */
+export function rowsToCsv(rows) {
+  return [
     COLUMNS.join(','),
     ...rows.map((row) => COLUMNS.map((col) => escapeCell(row[col])).join(',')),
-  ]
+  ].join('\r\n')
+}
+
+export function exportToCsv(rows, filename = 'job-applications.csv') {
   const bom = String.fromCharCode(0xfeff) // so Excel detects UTF-8
-  const blob = new Blob([bom + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' })
+  const blob = new Blob([bom + rowsToCsv(rows)], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
