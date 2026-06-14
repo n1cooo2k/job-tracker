@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useApplications } from '../hooks/useApplications'
 import { STATUSES, formatDate, parseDate, needsFollowUp, daysSince } from '../utils/stats'
 import { exportToCsv } from '../utils/csv'
@@ -17,7 +17,26 @@ import {
   CalendarIcon,
   InboxIcon,
   BellIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from '../components/icons'
+
+const PAGE_SIZE = 10
+
+// Page numbers to render, collapsing long ranges with ellipses: 1 … 4 5 6 … 20
+function pageList(current, total) {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
+  const wanted = [1, total, current, current - 1, current + 1].filter((p) => p >= 1 && p <= total)
+  const unique = [...new Set(wanted)].sort((a, b) => a - b)
+  const out = []
+  let prev = 0
+  for (const p of unique) {
+    if (p - prev > 1) out.push('…')
+    out.push(p)
+    prev = p
+  }
+  return out
+}
 
 function location(row) {
   return [row.city, row.country].filter(Boolean).join(', ') || '—'
@@ -119,6 +138,17 @@ export default function Board() {
   }, [filtered, sort])
 
   const followUpCount = useMemo(() => rows.filter(needsFollowUp).length, [rows])
+
+  const [page, setPage] = useState(1)
+  // Jump back to the first page whenever the result set or its order changes.
+  useEffect(() => setPage(1), [query, statusFilter, countryFilter, sort])
+
+  const pageCount = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE))
+  const currentPage = Math.min(page, pageCount)
+  const paginated = useMemo(
+    () => sorted.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
+    [sorted, currentPage],
+  )
 
   async function handleDelete() {
     setDeleting(true)
@@ -247,7 +277,7 @@ export default function Board() {
                   </tr>
                 </thead>
                 <tbody>
-                  {sorted.map((row) => (
+                  {paginated.map((row) => (
                     <tr key={row.id} className="border-b border-hairline transition last:border-0 hover:bg-surface-1">
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-2">
@@ -301,7 +331,7 @@ export default function Board() {
 
             {/* Mobile / tablet cards */}
             <div className="grid gap-3 sm:grid-cols-2 lg:hidden">
-              {sorted.map((row) => (
+              {paginated.map((row) => (
                 <div key={row.id} className="card flex flex-col gap-3 p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -344,6 +374,55 @@ export default function Board() {
                 </div>
               ))}
             </div>
+
+            {/* Pagination */}
+            {sorted.length > PAGE_SIZE && (
+              <div className="mt-5 flex flex-col items-center justify-between gap-3 sm:flex-row">
+                <p className="text-sm text-ink-400">
+                  Showing {(currentPage - 1) * PAGE_SIZE + 1}–
+                  {Math.min(currentPage * PAGE_SIZE, sorted.length)} of {sorted.length}
+                </p>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => setPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    aria-label="Previous page"
+                    className="grid size-9 place-items-center rounded-lg border border-hairline text-ink-300 transition hover:bg-surface-2 hover:text-ink-100 disabled:pointer-events-none disabled:opacity-40"
+                  >
+                    <ChevronLeftIcon size={16} />
+                  </button>
+                  {pageList(currentPage, pageCount).map((p, i) =>
+                    p === '…' ? (
+                      <span key={`gap-${i}`} className="px-1 text-ink-500">
+                        …
+                      </span>
+                    ) : (
+                      <button
+                        key={p}
+                        onClick={() => setPage(p)}
+                        aria-label={`Page ${p}`}
+                        aria-current={p === currentPage}
+                        className={`grid size-9 place-items-center rounded-lg border text-sm font-medium transition ${
+                          p === currentPage
+                            ? 'border-accent-500/40 bg-accent-600/15 text-accent-300'
+                            : 'border-hairline text-ink-300 hover:bg-surface-2 hover:text-ink-100'
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    ),
+                  )}
+                  <button
+                    onClick={() => setPage(currentPage + 1)}
+                    disabled={currentPage === pageCount}
+                    aria-label="Next page"
+                    className="grid size-9 place-items-center rounded-lg border border-hairline text-ink-300 transition hover:bg-surface-2 hover:text-ink-100 disabled:pointer-events-none disabled:opacity-40"
+                  >
+                    <ChevronRightIcon size={16} />
+                  </button>
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>

@@ -124,6 +124,18 @@ export const InboxIcon = (p) => (
   </Icon>
 )
 
+export const ChevronLeftIcon = (p) => (
+  <Icon {...p}>
+    <path d="m14 6-6 6 6 6" />
+  </Icon>
+)
+
+export const ChevronRightIcon = (p) => (
+  <Icon {...p}>
+    <path d="m10 6 6 6-6 6" />
+  </Icon>
+)
+
 export const BellIcon = (p) => (
   <Icon {...p}>
     <path d="M6 9a6 6 0 0 1 12 0c0 4 1.5 5.5 2 6.5H4c.5-1 2-2.5 2-6.5Z" />
