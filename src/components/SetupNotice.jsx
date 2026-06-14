@@ -16,7 +16,7 @@ export default function SetupNotice() {
           <code className="rounded bg-ink-800 px-1.5 py-0.5 font-mono text-xs text-accent-300">.env</code>{' '}
           file in the project root with:
         </p>
-        <pre className="mt-4 overflow-x-auto rounded-xl border border-white/8 bg-ink-900 p-4 font-mono text-xs leading-relaxed text-ink-200">
+        <pre className="mt-4 overflow-x-auto rounded-xl border border-hairline bg-ink-900 p-4 font-mono text-xs leading-relaxed text-ink-200">
 {`VITE_SUPABASE_URL=https://your-project-id.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-public-key`}
         </pre>

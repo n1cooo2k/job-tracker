@@ -30,6 +30,45 @@
   --color-interview: #ffc53d;
   --color-offer: #34d399;
   --color-rejected: #ff6b6b;
+
+  /* Semantic surfaces — translucent hairlines and elevation that flip per
+     theme, so the same utilities read correctly in dark and light. */
+  --color-hairline: rgba(255, 255, 255, 0.08);
+  --color-surface-1: rgba(255, 255, 255, 0.03);
+  --color-surface-2: rgba(255, 255, 255, 0.07);
+
+  /* Atmospheric glow tints used by the body background */
+  --glow-a: rgba(59, 130, 246, 0.13);
+  --glow-b: rgba(37, 99, 235, 0.07);
+  --picker-invert: 0.7;
+}
+
+/* Light theme overrides — same variable names, inverted values. */
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --color-ink-950: #f3f5f9;
+  --color-ink-900: #eaeef4;
+  --color-ink-850: #ffffff;
+  --color-ink-800: #e4e9f1;
+  --color-ink-700: #d4dbe6;
+  --color-ink-600: #c0c9d8;
+  --color-ink-500: #97a1b4;
+  --color-ink-400: #6c768a;
+  --color-ink-300: #49526a;
+  --color-ink-200: #2b3142;
+  --color-ink-100: #11151d;
+
+  --color-accent-300: #1d4ed8;
+  --color-accent-400: #2563eb;
+
+  --color-hairline: rgba(15, 23, 42, 0.1);
+  --color-surface-1: rgba(15, 23, 42, 0.025);
+  --color-surface-2: rgba(15, 23, 42, 0.06);
+
+  --glow-a: rgba(59, 130, 246, 0.1);
+  --glow-b: rgba(37, 99, 235, 0.06);
+  --picker-invert: 0;
 }
 
 @layer base {
@@ -40,16 +79,17 @@
   body {
     @apply bg-ink-950 text-ink-100 font-sans antialiased;
     background-image:
-      radial-gradient(900px 480px at 85% -10%, rgba(59, 130, 246, 0.13), transparent 65%),
-      radial-gradient(700px 420px at -10% 30%, rgba(37, 99, 235, 0.07), transparent 60%);
+      radial-gradient(900px 480px at 85% -10%, var(--glow-a), transparent 65%),
+      radial-gradient(700px 420px at -10% 30%, var(--glow-b), transparent 60%);
     background-attachment: fixed;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
 
   ::selection {
     background: rgba(59, 130, 246, 0.35);
   }
 
-  /* Slim dark scrollbars */
+  /* Slim themed scrollbars */
   * {
     scrollbar-width: thin;
     scrollbar-color: var(--color-ink-600) transparent;
@@ -64,22 +104,22 @@
   }
 
   input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(0.7);
+    filter: invert(var(--picker-invert));
     cursor: pointer;
   }
 }
 
-/* Panel card — soft top-light gradient over near-black */
+/* Panel card — soft top-light gradient over the surface color */
 @utility card {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.008) 40%),
+    linear-gradient(180deg, var(--color-surface-1), transparent 40%),
     var(--color-ink-850);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--color-hairline);
   border-radius: 1.25rem;
 }
 
 @utility field {
-  @apply w-full rounded-xl border border-white/8 bg-ink-900 px-3.5 py-2.5 text-sm text-ink-100
+  @apply w-full rounded-xl border border-hairline bg-ink-900 px-3.5 py-2.5 text-sm text-ink-100
     placeholder:text-ink-400 outline-none transition
     focus:border-accent-500/60 focus:ring-2 focus:ring-accent-500/20;
 }
@@ -92,9 +132,9 @@
 }
 
 @utility btn-ghost {
-  @apply inline-flex items-center justify-center gap-2 rounded-xl border border-white/8 bg-white/[0.03]
+  @apply inline-flex items-center justify-center gap-2 rounded-xl border border-hairline bg-surface-1
     px-4 py-2.5 text-sm font-medium text-ink-200 transition
-    hover:bg-white/[0.07] hover:text-ink-100 active:scale-[0.98] disabled:opacity-50;
+    hover:bg-surface-2 hover:text-ink-100 active:scale-[0.98] disabled:opacity-50;
 }
 
 /* Staggered page-load reveal */

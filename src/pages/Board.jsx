@@ -215,7 +215,7 @@ export default function Board() {
             <div className="card hidden overflow-hidden lg:block">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-white/8 text-left text-xs tracking-wide text-ink-400">
+                  <tr className="border-b border-hairline text-left text-xs tracking-wide text-ink-400">
                     <SortableTh label="COMPANY / ROLE" sortKey="company" sort={sort} onSort={handleSort} className="px-5" />
                     <th className="px-4 py-3.5 font-semibold">LOCATION</th>
                     <th className="px-4 py-3.5 font-semibold">SALARY</th>
@@ -226,7 +226,7 @@ export default function Board() {
                 </thead>
                 <tbody>
                   {sorted.map((row) => (
-                    <tr key={row.id} className="border-b border-white/[0.04] transition last:border-0 hover:bg-white/[0.025]">
+                    <tr key={row.id} className="border-b border-hairline transition last:border-0 hover:bg-surface-1">
                       <td className="px-5 py-3.5">
                         <p className="font-semibold text-ink-100">{row.company}</p>
                         <p className="mt-0.5 text-xs text-ink-300">{row.role}</p>
@@ -247,7 +247,7 @@ export default function Board() {
                               target="_blank"
                               rel="noreferrer"
                               title="Open job posting"
-                              className="rounded-lg p-2 text-ink-400 transition hover:bg-white/[0.06] hover:text-accent-300"
+                              className="rounded-lg p-2 text-ink-400 transition hover:bg-surface-2 hover:text-accent-300"
                             >
                               <ExternalIcon size={15} />
                             </a>
@@ -255,14 +255,14 @@ export default function Board() {
                           <button
                             onClick={() => setModal(row)}
                             title="Edit"
-                            className="rounded-lg p-2 text-ink-400 transition hover:bg-white/[0.06] hover:text-ink-100"
+                            className="rounded-lg p-2 text-ink-400 transition hover:bg-surface-2 hover:text-ink-100"
                           >
                             <PencilIcon size={15} />
                           </button>
                           <button
                             onClick={() => setDeleteTarget(row)}
                             title="Delete"
-                            className="rounded-lg p-2 text-ink-400 transition hover:bg-white/[0.06] hover:text-rejected"
+                            className="rounded-lg p-2 text-ink-400 transition hover:bg-surface-2 hover:text-rejected"
                           >
                             <TrashIcon size={15} />
                           </button>
@@ -295,21 +295,21 @@ export default function Board() {
                     {row.salary_range && <span className="font-mono">{row.salary_range}</span>}
                   </div>
                   {row.notes && <p className="line-clamp-2 text-xs text-ink-400">{row.notes}</p>}
-                  <div className="mt-auto flex justify-end gap-1 border-t border-white/[0.05] pt-2">
+                  <div className="mt-auto flex justify-end gap-1 border-t border-hairline pt-2">
                     {row.job_url && (
                       <a
                         href={row.job_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="rounded-lg p-2 text-ink-400 transition hover:bg-white/[0.06] hover:text-accent-300"
+                        className="rounded-lg p-2 text-ink-400 transition hover:bg-surface-2 hover:text-accent-300"
                       >
                         <ExternalIcon size={15} />
                       </a>
                     )}
-                    <button onClick={() => setModal(row)} className="rounded-lg p-2 text-ink-400 transition hover:bg-white/[0.06] hover:text-ink-100">
+                    <button onClick={() => setModal(row)} className="rounded-lg p-2 text-ink-400 transition hover:bg-surface-2 hover:text-ink-100">
                       <PencilIcon size={15} />
                     </button>
-                    <button onClick={() => setDeleteTarget(row)} className="rounded-lg p-2 text-ink-400 transition hover:bg-white/[0.06] hover:text-rejected">
+                    <button onClick={() => setDeleteTarget(row)} className="rounded-lg p-2 text-ink-400 transition hover:bg-surface-2 hover:text-rejected">
                       <TrashIcon size={15} />
                     </button>
                   </div>

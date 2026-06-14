@@ -24,7 +24,8 @@ import {
 } from '../utils/stats'
 
 const AXIS = { fill: 'var(--color-ink-300)', fontSize: 11.5 }
-const GRID = 'rgba(255,255,255,0.06)'
+const GRID = 'var(--color-hairline)'
+const CURSOR_FILL = 'var(--color-surface-1)'
 
 // Give ResponsiveContainer a sane first-paint size so it doesn't warn
 // before its ResizeObserver reports the real dimensions.
@@ -35,7 +36,7 @@ const Responsive = (props) => (
 function DarkTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null
   return (
-    <div className="rounded-xl border border-white/10 bg-ink-800 px-3.5 py-2.5 text-xs shadow-xl">
+    <div className="rounded-xl border border-hairline bg-ink-800 px-3.5 py-2.5 text-xs shadow-xl">
       {label != null && <p className="mb-1 font-semibold text-ink-200">{label}</p>}
       {payload.map((entry) => (
         <p key={entry.dataKey ?? entry.name} className="flex items-center gap-2 text-ink-300">
@@ -138,7 +139,7 @@ export default function Dashboard() {
                 <CartesianGrid stroke={GRID} vertical={false} />
                 <XAxis dataKey="label" tick={AXIS} axisLine={false} tickLine={false} interval="preserveStartEnd" />
                 <YAxis tick={AXIS} axisLine={false} tickLine={false} allowDecimals={false} />
-                <Tooltip content={<DarkTooltip />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
+                <Tooltip content={<DarkTooltip />} cursor={{ fill: CURSOR_FILL }} />
                 <Bar dataKey="count" name="Applications" fill="var(--color-accent-500)" radius={[5, 5, 0, 0]} maxBarSize={28} />
               </BarChart>
             </Responsive>
@@ -184,7 +185,7 @@ export default function Dashboard() {
                 <CartesianGrid stroke={GRID} horizontal={false} />
                 <XAxis type="number" tick={AXIS} axisLine={false} tickLine={false} allowDecimals={false} />
                 <YAxis type="category" dataKey="country" tick={AXIS} axisLine={false} tickLine={false} width={86} />
-                <Tooltip content={<DarkTooltip />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
+                <Tooltip content={<DarkTooltip />} cursor={{ fill: CURSOR_FILL }} />
                 <Bar dataKey="count" name="Applications" fill="var(--color-accent-400)" radius={[0, 5, 5, 0]} maxBarSize={18} />
               </BarChart>
             </Responsive>

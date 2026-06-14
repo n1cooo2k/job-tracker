@@ -80,7 +80,7 @@ export default function JobFormModal({ job, onSave, onClose }) {
               {isEdit ? `Update ${job.company} — ${job.role}` : 'Log a job you just applied to.'}
             </p>
           </div>
-          <button onClick={onClose} className="rounded-lg p-1.5 text-ink-400 transition hover:bg-white/[0.06] hover:text-ink-100">
+          <button onClick={onClose} className="rounded-lg p-1.5 text-ink-400 transition hover:bg-surface-2 hover:text-ink-100">
             <CloseIcon size={18} />
           </button>
         </div>

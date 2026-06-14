@@ -15,6 +15,17 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Apply the saved theme before first paint to avoid a flash.
+      (function () {
+        try {
+          document.documentElement.dataset.theme =
+            localStorage.getItem('theme') || 'dark'
+        } catch (e) {
+          document.documentElement.dataset.theme = 'dark'
+        }
+      })()
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

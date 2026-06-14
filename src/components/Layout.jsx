@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { LogoMark, BriefcaseIcon, ChartIcon, LogoutIcon } from './icons'
+import { useTheme } from '../hooks/useTheme'
+import { LogoMark, BriefcaseIcon, ChartIcon, LogoutIcon, SunIcon, MoonIcon } from './icons'
 
 const navItems = [
   { to: '/', label: 'Job Board', icon: BriefcaseIcon, end: true },
@@ -16,7 +17,7 @@ function NavItem({ to, label, icon: Icon, end }) {
         `group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
           isActive
             ? 'bg-accent-600/15 text-accent-300 shadow-[inset_0_0_0_1px_rgba(59,130,246,0.25)]'
-            : 'text-ink-300 hover:bg-white/[0.04] hover:text-ink-100'
+            : 'text-ink-300 hover:bg-surface-1 hover:text-ink-100'
         }`
       }
     >
@@ -28,12 +29,15 @@ function NavItem({ to, label, icon: Icon, end }) {
 
 export default function Layout() {
   const { user, signOut } = useAuth()
+  const { theme, toggle } = useTheme()
   const initial = (user?.email?.[0] ?? '?').toUpperCase()
+  const themeTitle = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+  const ThemeIcon = theme === 'dark' ? SunIcon : MoonIcon
 
   return (
     <div className="flex min-h-screen">
       {/* Sidebar — icon rail on tablet, full on desktop, bottom bar on mobile */}
-      <aside className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-white/8 bg-ink-900/95 px-4 py-2 backdrop-blur md:static md:inset-auto md:flex md:min-h-screen md:w-16 md:flex-col md:items-stretch md:justify-start md:border-t-0 md:border-r md:px-3 md:py-6 lg:w-60 lg:px-4">
+      <aside className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-hairline bg-ink-900/95 px-4 py-2 backdrop-blur md:static md:inset-auto md:flex md:min-h-screen md:w-16 md:flex-col md:items-stretch md:justify-start md:border-t-0 md:border-r md:px-3 md:py-6 lg:w-60 lg:px-4">
         <div className="hidden items-center gap-2.5 px-1.5 md:flex">
           <LogoMark size={32} />
           <span className="hidden font-display text-[17px] font-bold tracking-tight lg:inline">
@@ -48,7 +52,7 @@ export default function Layout() {
         </nav>
 
         <div className="md:mt-auto">
-          <div className="hidden items-center gap-3 border-t border-white/8 px-1.5 pt-5 md:flex">
+          <div className="hidden items-center gap-3 border-t border-hairline px-1.5 pt-5 md:flex">
             <div className="grid size-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-accent-500 to-accent-700 font-display text-sm font-bold text-white">
               {initial}
             </div>
@@ -57,21 +61,39 @@ export default function Layout() {
               <p className="text-[11px] text-ink-400">Signed in</p>
             </div>
             <button
+              onClick={toggle}
+              title={themeTitle}
+              aria-label="Toggle theme"
+              className="hidden rounded-lg p-2 text-ink-400 transition hover:bg-surface-2 hover:text-accent-300 lg:block"
+            >
+              <ThemeIcon size={17} />
+            </button>
+            <button
               onClick={signOut}
               title="Sign out"
-              className="hidden rounded-lg p-2 text-ink-400 transition hover:bg-white/[0.06] hover:text-rejected lg:block"
+              className="hidden rounded-lg p-2 text-ink-400 transition hover:bg-surface-2 hover:text-rejected lg:block"
             >
               <LogoutIcon size={17} />
             </button>
           </div>
-          {/* Compact sign-out for mobile bar + icon rail */}
-          <button
-            onClick={signOut}
-            title="Sign out"
-            className="rounded-xl p-2.5 text-ink-400 transition hover:bg-white/[0.06] hover:text-rejected md:mt-3 md:w-full md:justify-center lg:hidden flex items-center"
-          >
-            <LogoutIcon size={18} />
-          </button>
+          {/* Compact theme + sign-out for mobile bar + icon rail */}
+          <div className="flex items-center gap-1 md:mt-3 md:flex-col md:gap-1.5 lg:hidden">
+            <button
+              onClick={toggle}
+              title={themeTitle}
+              aria-label="Toggle theme"
+              className="flex items-center justify-center rounded-xl p-2.5 text-ink-400 transition hover:bg-surface-2 hover:text-accent-300 md:w-full"
+            >
+              <ThemeIcon size={18} />
+            </button>
+            <button
+              onClick={signOut}
+              title="Sign out"
+              className="flex items-center justify-center rounded-xl p-2.5 text-ink-400 transition hover:bg-surface-2 hover:text-rejected md:w-full"
+            >
+              <LogoutIcon size={18} />
+            </button>
+          </div>
         </div>
       </aside>
 
